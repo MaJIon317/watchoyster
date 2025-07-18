@@ -1,0 +1,39 @@
+<!-- layouts/app.blade.php или любое представление -->
+<div x-data="remoteModal" x-ref="modal" x-cloak>
+
+    <div
+            x-show="visible"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black/65 flex items-center justify-center z-50"
+            @keydown.window.escape="close"
+            style="display: none;"
+    >
+        <div
+                x-show="visible"
+                x-transition:enter="transition transform ease-out duration-300"
+                x-transition:enter-start="scale-90 opacity-0"
+                x-transition:enter-end="scale-100 opacity-100"
+                x-transition:leave="transition transform ease-in duration-200"
+                x-transition:leave-start="scale-100 opacity-100"
+                x-transition:leave-end="scale-90 opacity-0"
+                @click.outside="close"
+                class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl relative"
+        >
+            <button @click="close" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                </svg>
+            </button>
+
+            <template x-if="loading">
+                <div class="text-sm text-center py-4">Загрузка...</div>
+            </template>
+            <div x-html="htmlContent"></div>
+        </div>
+    </div>
+</div>

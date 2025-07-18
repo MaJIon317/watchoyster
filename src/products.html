@@ -1,0 +1,423 @@
+{% extends "src/layouts/app.html" %}
+
+{% block content %}
+
+<!-- Breadcrumbs -->
+<div class="container mb-3">
+    {% include 'src/components/breadcrumbs.html' %}
+</div>
+
+
+<section class="section mt-0" x-data="cards()" x-init="init()">
+    <div class="container">
+        <!-- Заголовок -->
+        <h1>Catalog</h1>
+
+        <div class="flex items-center mb-4 gap-1.5 md:gap-3">
+            <button type="button" class="btn btn-dark not-md:px-3" x-on:click="showFilter = true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M0 10.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 0-1H3V1.5a.5.5 0 0 0-1 0V10H.5a.5.5 0 0 0-.5.5M2.5 12a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0v-2a.5.5 0 0 0-.5-.5m3-6.5A.5.5 0 0 0 6 6h1.5v8.5a.5.5 0 0 0 1 0V6H10a.5.5 0 0 0 0-1H6a.5.5 0 0 0-.5.5M8 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0v-2A.5.5 0 0 0 8 1m3 9.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 0-1H14V1.5a.5.5 0 0 0-1 0V10h-1.5a.5.5 0 0 0-.5.5m2.5 1.5a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0v-2a.5.5 0 0 0-.5-.5" stroke="none"></path>
+                </svg>
+
+                <span>Filter (0)</span>
+            </button>
+
+
+            <!-- Tags -->
+            <div x-data="tagSlider()"
+                 x-init="init"
+                class="flex-1 gap-[inherit] overflow-hidden relative">
+
+                <button
+                        x-show="canScrollLeft"
+                        @click="scrollLeft"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 min-w-12 p-2 h-full a flex items-center justify-start bg-linear-to-l from-white/90 to-white not-md:hidden"
+                        style="display: none;"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" stroke="none"></path>
+                    </svg>
+                </button>
+
+                <!-- Tags -->
+                <div
+                        x-ref="scroller"
+                        class="flex-1 flex gap-[inherit] overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth"
+                        @scroll="updateScrollButtons"
+                        @touchstart="startTouch($event)"
+                        @touchmove="moveTouch($event)"
+                >
+
+                    <a href="#" class="btn font-normal min-w-max">Все</a>
+                    <a href="#" class="btn font-normal min-w-max">Электроника</a>
+                    <a href="#" class="btn font-normal min-w-max">Одежда</a>
+                    <a href="#" class="btn font-normal min-w-max">Обувь</a>
+                    <a href="#" class="btn font-normal min-w-max">Дом</a>
+                    <a href="#" class="btn font-normal min-w-max">Книги</a>
+                    <a href="#" class="btn font-normal min-w-max">Аксессуары</a>
+                    <a href="#" class="btn font-normal min-w-max">Мебель</a>
+                    <a href="#" class="btn font-normal min-w-max">Игрушки</a>
+                    <a href="#" class="btn font-normal min-w-max">Авто</a>
+
+                </div>
+
+                <button
+                        x-show="canScrollRight"
+                        @click="scrollRight"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 min-w-12 p-2 h-full a flex items-center justify-end bg-linear-to-r from-white/90 to-white not-md:hidden"
+                        style="display: none;"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708" stroke="none"></path>
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <!-- Filter Selected -->
+        <div class="flex flex-wrap gap-1.5 mb-8">
+
+            <button type="button" class="btn btn-sm">от 3100 ₽
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                </svg>
+            </button>
+            <button type="button" class="btn btn-sm">от 3100 ₽
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                </svg>
+            </button>
+            <button type="button" class="btn btn-sm">от 3100 ₽
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                </svg>
+            </button>
+            <button type="button" class="btn btn-sm">от 3100 ₽
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                </svg>
+            </button>
+            <button type="button" class="btn btn-sm">от 3100 ₽
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                </svg>
+            </button>
+
+        </div>
+
+        <div class="flex justify-between items-center mb-8 gap-4">
+            <div class="font-bold flex-1">2,777 listings</div>
+
+            <button type="button" class="p-1 rounded text-(--main-text) hover:text-(--main-text) hover:bg-(--footer)/10 not-md:justify-end" @click="toggleView">
+                <template x-if="view === 'grid'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5zM3 3H2v1h1z" stroke="none"></path>
+                        <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1z" stroke="none"></path>
+                        <path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5zM2 7h1v1H2zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm1 .5H2v1h1z" stroke="none"></path>
+                    </svg>
+                </template>
+                <template x-if="view === 'list'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16">
+                        <path d="M4 2v2H2V2zm1 12v-2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1m0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1m0-5V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1m5 10v-2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1m0-5V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1m0-5V2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1M9 2v2H7V2zm5 0v2h-2V2zM4 7v2H2V7zm5 0v2H7V7zm5 0h-2v2h2zM4 12v2H2v-2zm5 0v2H7v-2zm5 0v2h-2v-2zM12 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm-1 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm1 4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1z" stroke="none"></path>
+                    </svg>
+                </template>
+            </button>
+
+            <!-- Sort -->
+            <div class="flex items-center md:justify-end gap-3 md:flex-1">
+                <span class="text-sm not-md:hidden">Sort by</span>
+
+                <div class="relative" x-data="{ open: false, active: 'relevance' }"
+                     @mouseenter="if (window.innerWidth > 768) open = true"
+                     @mouseleave="if (window.innerWidth > 768) open = false"
+                     @click="open = !open"
+                >
+
+                    <button type="button" class="flex items-center space-x-2 md:px-4 md:py-2 md:w-36 md:border md:border-(--border) rounded-md text-sm transition">
+
+                        <span x-text="{
+                            relevance: 'Relevance',
+                            price_asc: 'Price: Low to High',
+                            price_desc: 'Price: High to Low',
+                            newest: 'Newest First'
+                          }[active]" class="overflow-hidden overflow-ellipsis text-nowrap not-md:hidden"></span>
+
+                        <svg class="w-2.5 h-2 transition-transform duration-100 rotate-0 not-md:hidden" :class="open ? 'rotate-x-180' : 'rotate-0'" viewBox="0 0 10 7" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.837601 1.04586C1.06541 0.818057 1.43475 0.818057 1.66256 1.04586L5.33341 4.71672L9.00427 1.04586C9.23206 0.818057 9.60143 0.818057 9.82922 1.04586C10.057 1.27367 10.057 1.64301 9.82922 1.87082L5.74589 5.95415C5.5181 6.18194 5.14873 6.18194 4.92094 5.95415L0.837601 1.87082C0.609797 1.64301 0.609797 1.27367 0.837601 1.04586Z" stroke="none"></path>
+                        </svg>
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="md:hidden" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" stroke="none"></path>
+                        </svg>
+                    </button>
+
+                    <div class="dropdown" x-show="open" x-transition="" style="display: none;">
+
+                        <template x-for="option in [
+                          { value: 'relevance', label: 'Relevance' },
+                          { value: 'price_asc', label: 'Price: Low to High' },
+                          { value: 'price_desc', label: 'Price: High to Low' },
+                          { value: 'newest', label: 'Newest First' }
+                        ]" :key="option.value">
+                            <button
+                                    @click="active = option.value; open = false"
+                                    class="item"
+                                    :class="active === option.value ? 'active' : ''"
+                                    x-text="option.label"
+                            ></button>
+                        </template>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="gap-x-2.5 md:gap-x-6 gap-y-8"
+             :class="{ 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4': view === 'grid', 'flex flex-col': view === 'list' }">
+
+            <!-- CARD 1 -->
+            {% include 'src/components/card.html' %}
+
+            {% include 'src/components/card.html' %}
+
+            {% include 'src/components/card.html' %}
+
+            {% include 'src/components/card.html' %}
+
+            {% include 'src/components/card.html' %}
+
+            {% include 'src/components/card.html' %}
+
+            <div class="col-span-2" x-show="view === 'grid'">
+
+                <div class="flex flex-col justify-end p-6 h-100 bg-[url(/assets/images/demo/product-banner.jpg)] bg-cover rounded-lg">
+                    <div class="flex items-end gap-4 text-white">
+                       <div class="flex flex-col gap-4 flex-1">
+                           <p class="font-semibold">Introducing</p>
+                           <h1 class="text-3xl uppercase font-bold">Time is our thing</h1>
+                       </div>
+                        <div class="flex flex-col gap-4">
+                            <a href="#" class="btn btn-white" wire:navigate>
+                                Discover now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center justify-center border border-(--border) rounded-lg text-center" x-show="view === 'grid'">
+
+                <!-- Content -->
+                <div class="flex flex-col justify-evenly w-full h-full p-6">
+
+                    <div class="flex justify-center">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" class="fill-[#336ecc]">
+                            <polygon points="38.5 48.561 28.47 38.53 29.53 37.47 38.5 46.439 52.47 32.47 53.53 33.53 38.5 48.561" stroke="none"></polygon>
+                            <g class="fill-[#374e80]">
+                                <path d="M39.99,73.754c-.047,0-.094-.005-.139-.013-.528-.023-1.058-.165-1.507-.407-4.249-2.19-25.504-13.979-25.504-30.38v-25.92c0-1.175.75-2.223,1.865-2.609l6.056-2.036.478,1.422-6.05,2.034c-.505.175-.849.654-.849,1.189v25.92c0,15.531,20.579,26.927,24.704,29.053.284.153.628.237.956.237.034,0,.067.002.101.007.293-.016.582-.095.841-.231,2.278-1.186,4.515-2.493,6.648-3.888l.82,1.256c-2.175,1.421-4.454,2.754-6.773,3.961-.504.265-1.074.405-1.646.405Z" stroke="none"></path>
+                                <path d="M57.187,62.545l-1.031-1.09c6.307-5.975,9.505-12.196,9.505-18.491v-25.97c.006-.545-.333-1.02-.845-1.188l-23.374-7.821c-.941-.32-1.932-.321-2.87-.001l-11.086,3.727-.478-1.422,11.084-3.726c1.25-.425,2.576-.426,3.83,0l23.367,7.819c1.132.372,1.886,1.425,1.872,2.62v25.961c0,6.724-3.355,13.312-9.974,19.581Z" stroke="none"></path>
+                                <path d="M40.029,66.964h-.01c-.091,0-.177-.031-.245-.084-2.437-1.354-7.104-4.169-11.432-8.049-4.162-3.736-9.123-9.523-9.123-15.878v-23.04c0-.172.109-.324.272-.379l20.42-6.88c.083-.028.173-.028.255,0l20.4,6.83c.163.055.273.208.273.379v23.09c0,11.299-14.331,20.473-20.566,23.927-.068.053-.154.084-.245.084ZM20.019,20.2v22.753c0,6.06,4.816,11.655,8.857,15.282,4.189,3.756,8.706,6.504,11.148,7.868,6.181-3.442,20.015-12.357,20.015-23.15v-22.802l-20-6.696-20.021,6.745Z" stroke="none"></path>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="mt-4">
+                        <h3>Worry-Free Watch Purchases</h3>
+                        <p class="text-sm mb-6">Chrono24 Buyer Protection Has You Covered</p>
+                        <a href="#" class="text-sm underline" wire:navigate>More information</a>
+                    </div>
+
+                </div>
+            </div>
+
+            {% include 'src/components/card.html' %}
+
+            {% include 'src/components/card.html' %}
+
+            <div class="flex items-center justify-center border border-(--border) rounded-lg text-center" x-show="view === 'grid'">
+                <div class="flex flex-col justify-evenly w-full h-full">
+
+                    <!-- Content -->
+                    <a href="#" class="flex items-center justify-center w-full h-full p-6 gap-1 text-xl">Next
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+                        </svg>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 mt-8">
+            <ul class="flex gap-0.5">
+                <li>
+                    <a href="#" class="inline-block text-sm rounded py-1.5 px-2.5 text-(--main-text) hover:text-(--main-text) hover:bg-(--footer)/10" wire:navigate>30</a>
+                </li>
+                <li>
+                    <a href="#" class="inline-block text-sm rounded py-1.5 px-2.5 text-(--main-text) hover:text-(--main-text) bg-(--footer)/10" wire:navigate>60</a>
+                </li>
+                <li>
+                    <a href="#" class="inline-block text-sm rounded py-1.5 px-2.5 text-(--main-text) hover:text-(--main-text) hover:bg-(--footer)/10" wire:navigate>120</a>
+                </li>
+            </ul>
+
+            Pagination
+        </div>
+
+    </div>
+
+
+    <!-- Filter -->
+    <div
+            x-show="showFilter"
+            x-transition
+            @click.away="showFilter = false"
+            class="fixed inset-0 bg-white"
+            style="display: none;"
+    >
+        <div class="container p-0 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-screen max-h-11/12">
+            <div class="relative h-full bg-white rounded-lg shadow-lg">
+                <button type="button" class="absolute right-6 top-4 a" x-on:click="showFilter = false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" stroke="none"></path>
+                    </svg>
+                </button>
+
+                <div class="flex flex-col h-full" x-data="{ activeFilter: null }">
+                    <div class="flex-1 flex">
+                        <div class="flex flex-col flex-1 h-full max-w-2xs border-r border-(--border)">
+
+                            <template x-for="filter in filters" :key="filter.id">
+                                <button
+                                        type="button"
+                                        @click="activeFilter = filter.id"
+                                        class="pl-4 py-2 w-full text-left hover:bg-gray-100"
+                                        :class="activeFilter === filter.id ? 'bg-gray-100' : ''"
+                                        x-text="filter.label"
+                                ></button>
+                            </template>
+
+                        </div>
+                        <div class="overflow-auto flex-1 p-8">
+
+                            <template x-for="filter in filters" :key="filter.id">
+                                <div x-show="activeFilter == filter.id">
+                                    Filter <span x-text="filter.label"></span>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+                    <div class="w-full border-t border-(--border)">
+                        <div class="flex items-center justify-between col-4 p-3">
+                            <span>102 results</span>
+
+                            <button type="submit" class="btn btn-dark">
+                                Apply filter(s)
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+
+<script>
+    function tagSlider() {
+        return {
+            tags: [
+                'Все', 'Электроника', 'Одежда', 'Обувь', 'Дом', 'Книги',
+                'Аксессуары', 'Мебель', 'Игрушки', 'Авто', 'Косметика', 'tes'
+            ],
+            scrollAmount: 200,
+            touchStartX: 0,
+            canScrollLeft: false,
+            canScrollRight: true,
+            $refs: undefined,
+            init() {
+                this.$nextTick(() => {
+                    this.updateScrollButtons();
+                    window.addEventListener('resize', this.updateScrollButtons);
+                });
+            },
+            scrollLeft() {
+                this.$refs.scroller.scrollBy({ left: -this.scrollAmount, behavior: 'smooth' });
+                this.$nextTick(() => setTimeout(this.updateScrollButtons, 300));
+            },
+
+            scrollRight() {
+                this.$refs.scroller.scrollBy({ left: this.scrollAmount, behavior: 'smooth' });
+                this.$nextTick(() => setTimeout(this.updateScrollButtons, 300));
+            },
+
+            updateScrollButtons() {
+                const scroller = this.$refs?.scroller;
+                if (!scroller) return;
+
+                this.canScrollLeft = scroller.scrollLeft > 0;
+                this.canScrollRight = scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 1;
+            },
+
+            startTouch(e) {
+                this.touchStartX = e.touches[0].clientX;
+            },
+
+            moveTouch(e) {
+                const touchEndX = e.touches[0].clientX;
+                const diff = this.touchStartX - touchEndX;
+                if (Math.abs(diff) > 30) {
+                    this.$refs.scroller.scrollBy({ left: diff, behavior: 'smooth' });
+                    this.touchStartX = touchEndX;
+                    setTimeout(this.updateScrollButtons, 300);
+                }
+            }
+        }
+    }
+</script>
+
+
+
+
+
+<script>
+
+    // Твой JSON-массив
+    const filtersJson = [
+        { id: 'all', label: 'Все' },
+        { id: 'electronics', label: 'Электроника' },
+        { id: 'clothes', label: 'Одежда' },
+        { id: 'accessories', label: 'Аксессуары' },
+    ];
+
+    function cards() {
+        return {
+            showFilter: false,
+            filters: filtersJson,
+            view: 'grid',
+            init() {
+                const saved = sessionStorage.getItem('cardView');
+                this.view = saved ?? 'grid';
+            },
+            toggleView() {
+                this.view = this.view === 'grid' ? 'list' : 'grid';
+                sessionStorage.setItem('cardView', this.view);
+            },
+
+        }
+    }
+
+</script>
+{% endblock %}

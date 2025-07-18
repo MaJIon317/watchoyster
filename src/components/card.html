@@ -1,0 +1,148 @@
+<div class="card"
+     x-show="view === 'grid'"
+     x-data="{
+      images: [
+        'https://img.chrono24.com/images/uhren/37092972-j0w6ut7csj9ebvyu0nx7ts8i-Square280.jpg',
+        'https://img.chrono24.com/images/uhren/39310284-cl08wt32f0usmx88f5uqxz4z-Square280.jpg',
+        'https://img.chrono24.com/images/uhren/40435390-eslh23uf726ulqkud401lrn7-Square280.jpg'
+      ],
+      currentIndex: 0,
+      handleMouseMove(event) {
+        const box = event.target.getBoundingClientRect();
+        const x = event.clientX - box.left;
+        const width = box.width;
+        const zone = Math.floor((x / width) * this.images.length);
+        this.currentIndex = Math.min(zone, this.images.length - 1);
+      },
+      handleTouchStart(e) {
+        this.touchStartX = e.touches[0].clientX;
+      },
+      handleTouchEnd(e) {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchEndX - this.touchStartX;
+
+        if (Math.abs(diff) > 30) {
+          if (diff < 0 && this.currentIndex < this.images.length - 1) {
+            this.currentIndex++;
+          } else if (diff > 0 && this.currentIndex > 0) {
+            this.currentIndex--;
+          }
+        }
+      },
+      reset() {
+        this.currentIndex = 0;
+      },
+      select(i) {
+        this.currentIndex = i;
+      }
+    }"
+     x-cloak
+>
+    <div class="relative">
+        <a href="#" class="flex aspect-square w-full overflow-hidden relative"
+           @mousemove="handleMouseMove($event)"
+           @mouseleave="reset"
+           @touchstart="handleTouchStart($event)"
+           @touchend="handleTouchEnd($event)"
+           wire:navigate
+        >
+            <template x-for="(img, i) in images" :key="i">
+                <img
+                        :src="img"
+                        x-show="currentIndex === i"
+                        x-transition.opacity.duration.300ms
+                        class="absolute inset-0 w-full h-full object-cover rounded-lg"
+                />
+            </template>
+        </a>
+
+        <!-- Horizontal Line Preview -->
+        <div class="flex justify-center gap-1.5 px-4 absolute bottom-2 w-full opacity-80">
+            <template x-for="(img, i) in images" :key="i">
+                <div
+                        @mouseenter="select(i)"
+                        class="h-[3px] rounded-full transition-all duration-300"
+                        :class="[
+                            currentIndex === i ? 'bg-(--main-text)' : 'bg-(--main-text)/40',
+                            'flex-1 max-w-[32px] min-w-[8px]'
+                        ]"
+
+                ></div>
+            </template>
+        </div>
+    </div>
+
+    <div class="mt-4 text-sm">
+        <h3 class="font-semibold not-md:text-sm mb-1">
+            <a href="#" wire:navigate>Universal Genève</a>
+        </h3>
+        <p class="overflow-hidden overflow-ellipsis text-nowrap mb-3 not-md:text-xs">Skeleton / 1990s / Yellow Gold / Automatic</p>
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center justify-between gap-[inherit]">
+                <span class="font-bold">₽548,904</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" stroke="none"></path>
+                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" stroke="none"></path>
+                </svg>
+            </div>
+            <div class="flex items-center justify-between gap-[inherit] text-xs">
+                <span>Free shipping</span>
+                <span>CH</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<a href="#" class="flex gap-6 hover:text-current" x-show="view === 'list'" x-cloak>
+    <div class="aspect-square overflow-hidden relative max-w-30 md:max-w-52" wire:navigate>
+        <img src="https://img.chrono24.com/images/uhren/37092972-j0w6ut7csj9ebvyu0nx7ts8i-Square280.jpg" alt="." class="w-full h-full object-cover rounded" />
+    </div>
+
+    <div class="flex-1 flex flex-col text-sm">
+        <h3 class="font-semibold">Universal Genève</h3>
+        <p class="overflow-hidden overflow-ellipsis text-nowrap mb-3">Skeleton / 1990s / Yellow Gold / Automatic</p>
+
+        <div class="grid grid-cols-2 gap-1 text-sm not-md:hidden">
+            <div class="grid grid-cols-2 gap-[inherit]">
+                <span>Movement:</span>
+                <strong class="overflow-hidden overflow-ellipsis text-nowrap">Quartz</strong>
+            </div>
+            <div class="grid grid-cols-2 gap-[inherit]">
+                <span>Movement:</span>
+                <strong class="overflow-hidden overflow-ellipsis text-nowrap">Quartz</strong>
+            </div>
+            <div class="grid grid-cols-2 gap-[inherit]">
+                <span>Movement:</span>
+                <strong class="overflow-hidden overflow-ellipsis text-nowrap">Quartz</strong>
+            </div>
+            <div class="grid grid-cols-2 gap-[inherit]">
+                <span>Movement:</span>
+                <strong class="overflow-hidden overflow-ellipsis text-nowrap">Quartz</strong>
+            </div>
+            <div class="grid grid-cols-2 gap-[inherit]">
+                <span>Movement:</span>
+                <strong class="overflow-hidden overflow-ellipsis text-nowrap">Quartz</strong>
+            </div>
+            <div class="grid grid-cols-2 gap-[inherit]">
+                <span>Movement:</span>
+                <strong class="overflow-hidden overflow-ellipsis text-nowrap">Quartz</strong>
+            </div>
+        </div>
+
+        <div class="mt-auto flex flex-col gap-1">
+            <div class="flex items-center justify-between gap-[inherit]">
+                <span class="font-bold">₽548,904</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" stroke="none"></path>
+                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" stroke="none"></path>
+                </svg>
+            </div>
+            <div class="flex items-center justify-between gap-[inherit] text-xs">
+                <span>Free shipping</span>
+                <span>CH</span>
+            </div>
+        </div>
+    </div>
+</a>

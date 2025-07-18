@@ -1,0 +1,485 @@
+{% extends "src/layouts/app.html" %}
+
+{% block content %}
+
+
+<section class="section mt-0">
+    <div class="bg-(--footer) text-(--footer-text) py-8">
+        <div class="container">
+            <h1>Your Order</h1>
+            <p>To help your dream watch find its way to you, please enter your address.</p>
+        </div>
+    </div>
+    <div class="container pt-8 grid lg:grid-cols-4 gap-8">
+
+        <form class="lg:col-span-3 order-1 space-y-12">
+
+            <div>
+
+                <h2 class="pb-4 border-b border-(--border)">Billing Address</h2>
+
+                <!-- Notice box -->
+                <div class="bg-(--bg-block) rounded-md p-3 sm:p-6 flex items-start space-x-3 mb-6">
+                    <div class="text-(--footer) pt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                            <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1" stroke="none"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-semibold block mb-2.5">Address Format</span>
+                        <span class="text-sm">Please enter the shipping address using <span class="font-semibold">Latin script</span>.</span>
+                    </div>
+                </div>
+
+                <!-- Form fields -->
+                <div class="flex flex-col gap-6">
+
+                    <!-- Text -->
+                    <div class="field-input">
+                        <label for="first-name">First name</label>
+                        <input
+                                id="first-name"
+                                type="text"
+                                placeholder="Enter the First name"
+                                autocomplete="first name"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <label for="last-name">Last name</label>
+                        <input
+                                id="last-name"
+                                type="text"
+                                placeholder="Enter the Last name"
+                                autocomplete="last name"
+                        />
+                    </div>
+
+                    <div class="field-input" x-data="phoneSelect()">
+                        <label for="phone" class="font-medium">Phone</label>
+                        <div class="group">
+                            <div class="prefix cursor-pointer" @click="open = !open">
+
+                                <input type="hidden" name="phone_code" x-model="selected.code" wire:model="phone_code">
+
+                                <img :src="selected.flag" alt="flag" class="w-5 h-4">
+                                <span class="text-sm" x-text="selected.code">{{ selected.code }}</span>
+                                <svg width="16" height="16" viewBox="0 0 10 7" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.837601 1.04586C1.06541 0.818057 1.43475 0.818057 1.66256 1.04586L5.33341 4.71672L9.00427 1.04586C9.23206 0.818057 9.60143 0.818057 9.82922 1.04586C10.057 1.27367 10.057 1.64301 9.82922 1.87082L5.74589 5.95415C5.5181 6.18194 5.14873 6.18194 4.92094 5.95415L0.837601 1.87082C0.609797 1.64301 0.609797 1.27367 0.837601 1.04586Z" stroke="none"></path>
+                                </svg>
+                            </div>
+                            <input
+                                    id="phone"
+                                    type="text"
+                                    placeholder="Enter the Phone"
+                                    autocomplete="phone"
+                            />
+
+                            <!-- Dropdown -->
+                            <div x-show="open" @click.away="open = false" x-transition class="dropdown left-0 right-auto" style="display: none;">
+                                <input type="text" x-model="search" placeholder="Search..." class="sticky top-0 bg-white">
+                                <template x-for="option in filteredOptions" :key="option.code">
+                                    <div @click="select(option)" class="item">
+                                        <img :src="option.flag" class="w-5 h-4">
+                                        <span class="text-sm" x-text="option.name">{{ option.name }}</span>
+                                        (<span class="text-sm" x-text="option.code">{{ option.code }}</span>)
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-input">
+                        <label for="street">Street</label>
+                        <input
+                                id="street"
+                                type="text"
+                                placeholder="Enter the Street"
+                                autocomplete="street"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <label for="street-line-2">Street line 2</label>
+                        <input
+                                id="street-line-2"
+                                type="text"
+                                placeholder="Enter the Street line 2"
+                                autocomplete="street line 2"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <div class="labels">
+                            <label for="zip">ZIP code</label>
+                            <label for="city">City</label>
+                        </div>
+                        <div class="flex gap-[inherit]">
+                            <input
+                                    id="zip"
+                                    type="text"
+                                    placeholder="Enter the ZIP"
+                                    autocomplete="zip"
+                                    class="flex-1/2"
+                            />
+                            <input
+                                    id="city"
+                                    type="text"
+                                    placeholder="Enter the City"
+                                    autocomplete="city"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Country selector -->
+                    <div class="field-input">
+                        <label>Country</label>
+                        <div class="relative w-full" x-data="countrySelect()">
+                            <input type="hidden" name="country" x-model="selected">
+
+                            <div @click="open = !open" class="input cursor-pointer">
+                                <span x-text="selected || 'Select a country'"></span>
+                                <svg viewBox="0 0 10 7" xmlns="http://www.w3.org/2000/svg" class="relative left-0 w-3 h-3">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.837601 1.04586C1.06541 0.818057 1.43475 0.818057 1.66256 1.04586L5.33341 4.71672L9.00427 1.04586C9.23206 0.818057 9.60143 0.818057 9.82922 1.04586C10.057 1.27367 10.057 1.64301 9.82922 1.87082L5.74589 5.95415C5.5181 6.18194 5.14873 6.18194 4.92094 5.95415L0.837601 1.87082C0.609797 1.64301 0.609797 1.27367 0.837601 1.04586Z" stroke="none"></path>
+                                </svg>
+                            </div>
+
+                            <div x-show="open" @click.outside="open = false" class="dropdown left-0 right-auto" style="display: none;">
+                                <input type="text" x-model="search" placeholder="Search country..." class="sticky top-0 bg-white">
+                                <template x-for="country in filteredCountries" :key="country">
+                                    <div @click="select(country)" class="item" x-text="country"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div x-data="{ address: 'old' }">
+
+                <h2 class="pb-4 border-b border-(--border)">Shipping Address</h2>
+
+                <div class="relative grid grid-cols-1 md:grid-cols-[250px_1fr] gap-x-4 gap-y-1">
+                    <div></div>
+                    <div class="flex flex-col gap-4">
+                        <label class="flex space-x-2">
+                            <input type="radio" name="address" x-model="address" value="old" class="peer sr-only" checked>
+                            <span class="w-5 h-5 rounded-full border border-gray-400 peer-checked:border-[5px] peer-checked:border-gray-900 transition-all duration-150"></span>
+                            <span class="flex-1 text-sm">Same as billing address</span>
+                        </label>
+
+                        <label class="inline-flex space-x-2">
+                            <input type="radio" name="address" x-model="address" value="new" class="peer sr-only">
+                            <span class="w-5 h-5 rounded-full border border-gray-400 peer-checked:border-[5px] peer-checked:border-gray-900 transition-all duration-150"></span>
+                            <span class="flex-1 text-sm">Different shipping address</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div x-show="address === 'new'" class="flex flex-col gap-6 mt-6">
+
+                    <div class="field-input">
+                        <label for="delivery-address-company">Company</label>
+                        <input
+                                id="delivery-address-company"
+                                name="delivery_address.company"
+                                wire:model="delivery_address.company"
+                                type="text"
+                                placeholder="Enter the Company"
+                                autocomplete="company"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <label for="delivery-address-first-name">First name</label>
+                        <input
+                                id="delivery-address-first-name"
+                                name="delivery_address.first-name"
+                                wire:model="delivery_address.first-name"
+                                type="text"
+                                placeholder="Enter the First name"
+                                autocomplete="first name"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <label for="delivery-address-last-name">Last name</label>
+                        <input
+                                id="delivery-address-last-name"
+                                name="delivery_address.last-name"
+                                wire:model="delivery_address.last-name"
+                                type="text"
+                                placeholder="Enter the Last name"
+                                autocomplete="last name"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <label for="delivery-address-street">Street</label>
+                        <input
+                                id="delivery-address-street"
+                                name="delivery_address.street"
+                                wire:model="delivery_address.street"
+                                type="text"
+                                placeholder="Enter the Street"
+                                autocomplete="street"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <label for="delivery-address-street-line-2">Street line 2</label>
+                        <input
+                                id="delivery-address-street-line-2"
+                                name="delivery_address.street-line-2"
+                                wire:model="delivery_address.street-line-2"
+                                type="text"
+                                placeholder="Enter the Street line 2"
+                                autocomplete="street line 2"
+                        />
+                    </div>
+
+                    <div class="field-input">
+                        <div class="labels">
+                            <label for="delivery-address-zip">ZIP code</label>
+                            <label for="delivery-address-city">City</label>
+                        </div>
+                        <div class="flex gap-[inherit]">
+                            <input
+                                    id="delivery-address-zip"
+                                    type="text"
+                                    name="delivery_address.zip"
+                                    wire:model="delivery_address.zip"
+                                    placeholder="Enter the ZIP"
+                                    autocomplete="zip"
+                                    class="flex-1/2"
+                            />
+                            <input
+                                    id="delivery-address-city"
+                                    type="text"
+                                    name="delivery_address.city"
+                                    wire:model="delivery_address.city"
+                                    placeholder="Enter the City"
+                                    autocomplete="city"
+                            />
+                        </div>
+                    </div>
+
+
+                    <!-- Country selector -->
+                    <div class="field-input">
+                        <label>Country</label>
+                        <div class="relative w-full" x-data="countrySelect()">
+                            <input
+                                type="hidden"
+                                name="delivery_address.country"
+                                wire:model="delivery_address.country"
+                                x-model="selected"
+                            >
+
+                            <div @click="open = !open" class="input cursor-pointer">
+                                <span x-text="selected || 'Select a country'"></span>
+                                <svg viewBox="0 0 10 7" xmlns="http://www.w3.org/2000/svg" class="relative left-0 w-3 h-3">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.837601 1.04586C1.06541 0.818057 1.43475 0.818057 1.66256 1.04586L5.33341 4.71672L9.00427 1.04586C9.23206 0.818057 9.60143 0.818057 9.82922 1.04586C10.057 1.27367 10.057 1.64301 9.82922 1.87082L5.74589 5.95415C5.5181 6.18194 5.14873 6.18194 4.92094 5.95415L0.837601 1.87082C0.609797 1.64301 0.609797 1.27367 0.837601 1.04586Z" stroke="none"></path>
+                                </svg>
+                            </div>
+
+                            <div x-show="open" @click.outside="open = false" class="dropdown left-0 right-auto" style="display: none;">
+                                <input type="text" x-model="search" placeholder="Search country..." class="sticky top-0 bg-white">
+                                <template x-for="country in filteredCountries" :key="country">
+                                    <div @click="select(country)" class="item" x-text="country"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <h2 class="pb-4 border-b border-(--border)">Summary</h2>
+
+
+                <div class="relative grid grid-cols-1 md:grid-cols-[250px_1fr] gap-x-4 gap-y-1">
+                    <div></div>
+                    <div>
+
+                        <!-- Price block -->
+                        <div class="bg-(--bg-block) p-3 sm:p-6 rounded-lg text-sm space-y-1">
+                            <div class="flex justify-between">
+                                <span>Item price</span>
+                                <span>₽52,635</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Shipping costs</span>
+                                <span>₽5,399</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="flex justify-between font-semibold">
+                                <span>Total price</span>
+                                <span>₽58,034</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>In the payment currency</span>
+                                <span>HK$5,846</span>
+                            </div>
+                            <div class="mt-6">
+                                <span class="a underline" @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: { url: '/modal/test.html' } }))">Customs duties and import taxes</span>
+                                 may be incurred in addition to the price listed above.
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <hr class="my-8">
+
+
+                <div class="relative grid grid-cols-1 md:grid-cols-[250px_1fr] gap-x-4 gap-y-1 text-right">
+                    <div></div>
+                    <div>
+
+                        <label class="inline-flex space-x-2 cursor-pointer text-sm text-left">
+                            <input type="checkbox" class="sr-only peer" />
+                            <span class="w-5 h-5 border rounded-xs border-gray-400 bg-white peer-checked:bg-gray-900 peer-checked:border-gray-900 relative after:content-[''] after:absolute after:inset-0 after:m-auto after:w-2 after:h-2 after:bg-white after:rounded-xs after:opacity-0 peer-checked:after:opacity-100"></span>
+                            <span class="flex-1">
+                                I am aware that this purchase may incur
+                                <button
+                                    type="button"
+                                    class="a underline text-left"
+                                    @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: { url: '/modal/test.html' } }))"
+                                >
+                                    additional customs duties and import taxes
+                                </button>
+                            </span>
+                        </label>
+
+                        <div class="mt-12 mb-3 overflow-hidden">
+                            <p class="text-xs max-w-110 float-right">
+                                By clicking the button, you acknowledge that you have read and understood the
+                                <a href="#" target="_blank" class="underline">Trusted Checkout General Terms and Conditions</a>.
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark btn-lg not-md:w-full">Submit order</button>
+
+                        <div class="flex justify-end mt-4">
+                            {% include 'src/components/payments.html' %}
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+        </form>
+
+
+        <!-- Right: Watch info -->
+        <aside class="lg:col-span-1 order-0 lg:order-2">
+            <div class="sticky top-4 flex flex-row lg:flex-col gap-4 overflow-hidden bg-white border border-(--border) shadow-lg rounded-lg p-4 w-full cursor-pointer text-sm lg:mt-[-150px]">
+                <img src="https://img.chrono24.com/images/uhren/39226527-ufpduvfsdhpn482864o69nku-ExtraLarge.jpg" alt="Omega Seamaster" class="rounded-lg object-cover aspect-square w-20 lg:w-full">
+
+                <div class="flex-1">
+                    <div class="font-semibold mb-1">Omega Seamaster</div>
+                    <div>Professional great condition</div>
+
+                    <div class="mt-2">
+                        <div class="flex items-center justify-between gap-2 bg-gray-100 px-2 py-1 rounded w-fit lg:w-full">
+                            <span>Delivery: 7/18/25 - 7/24/25</span>
+
+                            <button
+                                    x-data="tooltip()"
+                                    x-ref="reference"
+                                    class="not-md:hidden"
+                                    data-content='
+                                        <div class="text-sm">
+                                            <div class="font-semibold">The item needs to be procured</div>
+                                            <div>
+                                              and will be ready to ship within <strong>5 days.</strong><br/>
+                                              Expect to receive the item <strong>2 - 8 days</strong> after that.
+                                            </div>
+                                        </div>
+                                    '
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" stroke="none"></path>
+                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" stroke="none"></path>
+                                </svg>
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</section>
+
+
+<script>
+    function phoneSelect() {
+        return {
+            open: false,
+            search: '',
+            selected: { name: 'Russia', code: '+7', flag: 'https://flagcdn.com/w40/ru.png' },
+            options: [
+                { name: 'Russia', code: '+7', flag: 'https://flagcdn.com/w40/ru.png' },
+                { name: 'Germany', code: '+49', flag: 'https://flagcdn.com/w40/de.png' },
+                { name: 'USA', code: '+1', flag: 'https://flagcdn.com/w40/us.png' },
+                { name: 'France', code: '+33', flag: 'https://flagcdn.com/w40/fr.png' },
+                { name: 'Japan', code: '+81', flag: 'https://flagcdn.com/w40/jp.png' },
+                { name: 'United Kingdom', code: '+44', flag: 'https://flagcdn.com/w40/gb.png' },
+                { name: 'Italy', code: '+39', flag: 'https://flagcdn.com/w40/it.png' },
+                { name: 'Spain', code: '+34', flag: 'https://flagcdn.com/w40/es.png' },
+                { name: 'Australia', code: '+61', flag: 'https://flagcdn.com/w40/au.png' },
+                { name: 'China', code: '+86', flag: 'https://flagcdn.com/w40/cn.png' },
+                { name: 'India', code: '+91', flag: 'https://flagcdn.com/w40/in.png' },
+                { name: 'Brazil', code: '+55', flag: 'https://flagcdn.com/w40/br.png' },
+                { name: 'Ukraine', code: '+380', flag: 'https://flagcdn.com/w40/ua.png' },
+                { name: 'Poland', code: '+48', flag: 'https://flagcdn.com/w40/pl.png' },
+            ],
+            get filteredOptions() {
+                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()) || o.code.includes(this.search));
+            },
+            select(option) {
+                this.selected = option;
+                this.open = false;
+                this.search = '';
+            }
+        }
+    }
+
+    function countrySelect() {
+        return {
+            open: false,
+            search: '',
+            selected: '',
+            countries: [
+                'Russia', 'Germany', 'USA', 'France', 'Japan', 'Italy', 'Spain', 'Canada', 'Australia', 'China', 'Brazil', 'India'
+            ],
+            get filteredCountries() {
+                return this.countries.filter(c => c.toLowerCase().includes(this.search.toLowerCase()));
+            },
+            select(country) {
+                this.selected = country;
+                this.open = false;
+                this.search = '';
+            }
+        }
+    }
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,645 @@
+{% extends "src/layouts/app.html" %}
+
+{% block content %}
+
+<section>
+    <div class="container">
+        <div class="flex flex-wrap gap-8 mb-12">
+            <div class="flex-auto w-full md:flex-1 lg:flex-1/6 overflow-hidden"
+                 x-data="productGallery()"
+                 x-init="init()"
+            >
+
+                <!-- Основное изображение с лупой -->
+                <div
+                        class="relative group overflow-hidden rounded-xl"
+                        x-ref="mainImageContainer"
+                        @mousemove="zoomMove($event)"
+                        @mouseenter="zoom=true"
+                        @mouseleave="zoom=false"
+                        @touchstart.passive="startSwipe($event)"
+                        @touchend.passive="endSwipe($event)"
+                        style="--zoom-x: 50%; --zoom-y: 50%;"
+                >
+                    <!-- Видео -->
+                    <template x-if="isVideo">
+                        <iframe
+                                class="w-full aspect-video"
+                                :src="youtubeUrl"
+                                frameborder="0"
+                                allowfullscreen
+                        ></iframe>
+                    </template>
+
+                    <!-- Картинка -->
+                    <template x-if="!isVideo">
+                        <img
+                                :src="currentImage"
+                                alt="Product Image"
+                                class="w-full object-cover transition-transform duration-300"
+                                :class="{'cursor-zoom-in': canZoom, 'cursor-auto': !canZoom}"
+                                :style="zoom ? `transform: scale(2); transform-origin: ${zoomOriginX}% ${zoomOriginY}%;` : 'transform: scale(1); transform-origin: center center;'"
+                        />
+                    </template>
+
+                    <!-- Кнопки навигации -->
+                    <button
+                            @click="prev()"
+                            class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white w-12 h-13 rounded-r group-hover:flex hidden a items-center justify-center"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" stroke="none"></path>
+                        </svg>
+                    </button>
+                    <button
+                            @click="next()"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white w-12 h-13 rounded-l group-hover:flex hidden a items-center justify-center"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708" stroke="none"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Верхние иконки -->
+                    <div class="absolute top-4 right-4 flex gap-2">
+                        <button class="bg-white rounded-full shadow w-11 h-11 flex items-center justify-center" @click="toggleVideo()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" x-show="!isVideo">
+                                <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z" stroke="none"></path>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" x-show="isVideo">
+                                <path fill-rule="evenodd" d="M10.961 12.365a2 2 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518zM1.428 4.18A1 1 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634zM15 11.73l-3.5-1.555v-4.35L15 4.269zm-4.407 3.56-10-14 .814-.58 10 14z" stroke="none"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Перевью -->
+                <div class="flex space-x-2 mt-2.5">
+                    <template x-for="(img, i) in images" :key="i">
+                        <div @click="setImage(i)" class="max-w-28 w-full flex aspect-4/3 overflow-hidden relative cursor-pointer">
+                            <img
+                                    :src="img"
+                                    alt="."
+                                    class="absolute cursor-pointer inset-0 w-full h-full object-cover rounded-lg border-1 transition duration-200"
+                                    :class="{
+                                        'border-(--footer) opacity-100': i === currentIndex,
+                                        'border-transparent opacity-30': i !== currentIndex
+                                    }"
+                            />
+                        </div>
+                    </template>
+                </div>
+
+
+            </div>
+            <div class="flex-1 flex flex-col gap-4">
+                {% include 'src/components/breadcrumbs.html' %}
+
+                <h2 class="mb-0">Zenith Defy
+                    <span class="block text-base font-normal">Classic / Black Ceramic / Skeleton / Date / 41mm / Box&Papers / 49.9000.670/77.R782</span>
+                </h2>
+
+                <!-- Блок рейтинга -->
+                <div class="flex items-center gap-2  text-lg">
+                    <!-- Звёзды -->
+                    <div class="flex text-yellow-500">
+                        <svg class="w-4 h-4" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" stroke="none"></path></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" stroke="none"></path></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" stroke="none"></path></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" stroke="none"></path></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" stroke="none"></path></svg>
+                    </div>
+
+                    <!-- Кол-во отзывов -->
+                    <a href="#review" class="a text-xs">
+                        123 отзыва
+                    </a>
+                </div>
+
+                <div class="text-sm">
+                    Used <span class="a underline"
+                               @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: { url: '/modal/test.html' } }))"
+                >(Very good)</span> | Year of production 2019 (Approximation) | Original box | Original papers
+                </div>
+
+                <div class="w-full">
+                    <div class="text-2xl font-medium mb-1">₽542,264</div>
+
+                    <div class="text-sm">
+                        <span>Free insured shipping to</span>
+
+                        <button type="button" class="a underline"
+                                                         @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: { url: '/modal/test.html' } }))"
+                        >Hong Kong</button>
+
+                    </div>
+                </div>
+
+                {% include 'src/components/payments.html' %}
+
+                <div class="flex flex-col gap-2.5 mb-4">
+                    <button type="button" class="btn btn-dark btn-lg">
+                        Buy now
+                    </button>
+                    <a href="https://www.chrono24.ch/watch/NCRDR5" target="_blank" rel="nofollow" type="button" class="btn btn-lg">
+                        Buy on Chrono24 for ₽563,310
+                    </a>
+                </div>
+
+                <div class="border border-(--border) rounded-md p-4">
+                    <div class="flex items-center gap-2 mb-2.5">Buyer Protection
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" class="text-(--footer-secondary)">
+                            <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" stroke="none"></path>
+                            <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0" stroke="none"></path>
+                        </svg>
+                    </div>
+
+                    <div class="text-xs">
+                        Thanks to our Buyer Protection, your purchase is fully covered. If something goes wrong, we're there to help. <button type="button" class="a underline">Learn more</button>.
+                    </div>
+                </div>
+
+                <!-- Shipping -->
+                <h3 class="mt-4">Shipping and Seller Information</h3>
+                <div class="text-sm">Item ships in 5 days</div>
+                <div class="flex items-center gap-1.5 text-sm">
+                    Latest anticipated delivery on 7/29
+
+                    <button
+                            x-data="tooltip()"
+                            x-ref="reference"
+                            data-content='
+                                <div class="text-sm">
+                                    <div class="font-semibold">The item needs to be procured</div>
+                                    <div>
+                                      and will be ready to ship within <strong>5 days.</strong><br/>
+                                      Expect to receive the item <strong>2 - 8 days</strong> after that.
+                                    </div>
+                                </div>
+                            '
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" stroke="none"></path>
+                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" stroke="none"></path>
+                        </svg>
+                    </button>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container tabs" x-data="{ tab: 'details' }">
+        <h2>More About This Listing</h2>
+
+        <!-- Tabs -->
+        <div class="heading">
+            <button
+                    @click="tab = 'details'"
+                    :class="tab === 'details' ? 'active' : ''"
+                    class="item"
+            >
+                Details
+            </button>
+            <button
+                    @click="tab = 'security'"
+                    :class="tab === 'security' ? 'active' : ''"
+                    class="item"
+            >
+                Security
+            </button>
+        </div>
+
+        <!-- Details Tab Content -->
+        <div x-show="tab === 'details'" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Left Column -->
+            <div>
+                <!-- Basic Info Table -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Basic Info</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-medium">Listing code</td>
+                            <td>NCRUNCH5</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Brand</td>
+                            <td>Zenith</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Model</td>
+                            <td>Defy</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Reference number</td>
+                            <td>49.9000.670/77.R782</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Dealer product code</td>
+                            <td>642573001</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Functions -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Functions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td class="py-2">Date</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Other -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Other</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Skeletonized, Display back, Central seconds, Luminous hands, Luminous indices</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <h3>Description</h3>
+                <p class="text-sm leading-relaxed">
+                    The Zenith Defy Classic 49.9000.670/77.R782 is a bold and modern timepiece that embodies the brand’s innovative spirit.
+                    Featuring a sleek 41mm black ceramic case, it is both lightweight and durable, offering a striking contemporary design.
+                    The openwork dial showcases the intricate Calibre Elite 670SK movement, which boasts a 50-hour power reserve and a star-shaped rotor,
+                    paying homage to Zenith’s iconic logo. A transparent case back allows for an unobstructed view of the finely crafted automatic movement.
+                    The integrated rubber strap seamlessly blends with the case, providing both a sporty aesthetic and superior comfort.
+                    With a water resistance of 10 ATM, it is versatile enough for daily wear while maintaining a refined elegance.
+                    This preowned model has been professionally maintained and cleaned, and it comes with its original inner and outer boxes, as well as a warranty.
+                </p>
+            </div>
+        </div>
+
+        <!-- Security Tab Placeholder -->
+        <div x-show="tab === 'security'" class="mt-4" style="display: none;">
+
+
+            <div x-data="{ openItem: null }" class="max-w-7xl mx-auto">
+                <!-- Desktop Grid -->
+                <div class="hidden md:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-10">
+                    <!-- Item -->
+                    <div class="space-y-2 text-center">
+                        <img src="assets/images/security/escrow-service.svg" class="inline h-22 mb-6" alt=".">
+                        <h3>Payment via Chrono24's secure Escrow Service</h3>
+                        <p class="text-sm">
+                            Thanks to the Chrono24 Escrow Service, your payment is fully covered. We keep your money in our escrow account for 14 days after delivery of your watch...
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 text-center">
+                        <img src="assets/images/security/authenticity-guarantee.svg" class="inline h-22 mb-6" alt=".">
+                        <h3>Commitment to Authenticity</h3>
+                        <p class="text-sm">
+                            Our promise: Every new and used watch on Chrono24 is authentic. Our dealers are required to inspect each watch's authenticity...
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 text-center">
+                        <img src="assets/images/security/money-back-guarantee.svg" class="inline h-22 mb-6" alt=".">
+                        <h3>14-day money-back guarantee</h3>
+                        <p class="text-sm">
+                            If the watch arrives and is defective or not as the seller described, you have 14 days to initiate a return...
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 text-center">
+                        <img src="assets/images/security/dealer-guidelines.svg" class="inline h-22 mb-6" alt=".">
+                        <h3>Strict dealer guidelines</h3>
+                        <p class="text-sm">
+                            Dealers must follow strict rules and provide photo ID, business address, and tax info...
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 text-center">
+                        <img src="assets/images/security/safe-delivery.svg" class="inline h-22 mb-6" alt=".">
+                        <h3>Insured shipping</h3>
+                        <p class="text-sm">
+                            A 40-person team ensures suspicious listings are removed and helps resolve issues...
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 text-center">
+                        <img src="assets/images/security/team.svg" class="inline h-22 mb-6" alt=".">
+                        <h3>Chrono24's quality & security team</h3>
+                        <p class="text-sm">
+                            Thanks to the Chrono24 Escrow Service, your payment is fully covered. We keep your money in our escrow account for 14 days after delivery of your watch...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Mobile Accordion -->
+                <div class="md:hidden space-y-4">
+                    <template x-for="(item, index) in [
+                        { title: 'Payment via Chrono24\'s secure Escrow Service', text: 'Thanks to the Chrono24 Escrow Service, your payment is fully covered. We keep your money in our escrow account for 14 days after delivery of your watch...' },
+                        { title: 'Commitment to Authenticity', text: 'Our promise: Every new and used watch on Chrono24 is authentic. Our dealers are required to inspect each watch\'s authenticity...' },
+                        { title: '14-day money-back guarantee', text: 'If the watch arrives and is defective or not as the seller described, you have 14 days to initiate a return...' },
+                        { title: 'Strict dealer guidelines', text: 'Dealers must follow strict rules and provide photo ID, business address, and tax info...' },
+                        { title: 'Insured shipping', text: 'Dealers ship every order fully insured for risk-free purchases...' },
+                        { title: 'Chrono24\'s quality & security team', text: 'A 40-person team ensures suspicious listings are removed and helps resolve issues...' }
+                      ]" :key="index">
+                        <div class="border border-gray-200 rounded-lg">
+                            <button
+                                    class="w-full text-left px-4 py-3 font-medium flex justify-between items-center"
+                                    @click="openItem === index ? openItem = null : openItem = index"
+                            >
+                                <span x-text="item.title"></span>
+                                <svg :class="{'transform rotate-180': openItem === index}" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" stroke="none"></path>
+                                </svg>
+                            </button>
+                            <div x-show="openItem === index" class="px-4 pb-4 text-sm">
+                                <p x-text="item.text"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Learn More Button -->
+                <div class="text-center mt-10">
+                    <a href="#" class="btn">Learn more about security</a>
+                </div>
+            </div>
+
+            <!-- Easy Returns -->
+            <h2 class="mt-24">Easy returns</h2>
+            <p class="text-sm mb-8">
+                Dissatisfied with your purchase? No worries! Chrono24's secure Escrow Service makes returning your order a breeze...
+            </p>
+
+            <!-- Return Steps -->
+            <h2 class="mt-12">How returns work:</h2>
+            <div class="grid sm:grid-cols-3 gap-8 text-center text-sm">
+
+                <div class="flex items-center gap-6 text-base">
+                    <img src="assets/images/security/team.svg" class="inline w-22" alt=".">
+                    1. Inform Chrono24’s support team
+                </div>
+
+                <div class="flex items-center gap-6 text-base">
+                    <img src="assets/images/security/insured-return.svg" class="inline w-22" alt=".">
+                    2. Ship the watch back to the dealer insured for its full value
+                </div>
+
+                <div class="flex items-center gap-6 text-base">
+                    <img src="assets/images/security/money-back-guarantee.svg" class="inline w-22" alt=".">
+                    3. Receive a refund for the purchase price
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section id="review" class="section">
+
+    <div class="container">
+        <h2>Reviews (269)</h2>
+
+        <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
+            <!-- Left Column -->
+            <div>
+
+                <div class="flex items-center space-x-2">
+                    <svg class="text-(--footer-secondary)" width="20" height="20" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" stroke="none"></path>
+                    </svg>
+                    <span class="text-xl font-semibold">5.0</span>
+                </div>
+
+                <div class="mt-2.5 space-y-2 text-sm">
+                    <p><strong>5.0</strong> Shipping</p>
+                    <p><strong>5.0</strong> Item description</p>
+                    <p><strong>5.0</strong> Communication</p>
+                </div>
+                <p class="mt-4 text-sm">
+                    <span class="font-semibold">269 buyers</span> recommend this product
+                </p>
+            </div>
+
+            <!-- Right Column - Bars -->
+            <table class="flex-auto w-full md:max-w-[65%] pl-12 text-sm">
+                <tbody>
+                    <tr>
+                        <td class="text-nowrap pr-2 pb-3">5 stars</td>
+                        <td class="text-nowrap pr-4 pb-3">(268)</td>
+                        <td class="w-full pb-3">
+                            <div class="flex-1 bg-gray-200 rounded h-1.5 relative">
+                                <div class="absolute top-0 left-0 h-1.5 rounded bg-(--footer-secondary)" style="width: 99%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-nowrap pr-2 pb-3">4 stars</td>
+                        <td class="text-nowrap pr-4 pb-3">(1)</td>
+                        <td class="w-full pb-3">
+                            <div class="flex-1 bg-gray-200 rounded h-1.5 relative">
+                                <div class="absolute top-0 left-0 h-1.5 rounded bg-(--footer-secondary)" style="width: 1%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+ 
+                    <tr>
+                        <td class="text-nowrap pr-2 pb-3">3 stars</td>
+                        <td class="text-nowrap pr-4 pb-3">(0)</td>
+                        <td class="w-full pb-3">
+                            <div class="flex-1 bg-gray-200 rounded h-1.5 relative">
+                                <div class="absolute top-0 left-0 h-1.5 rounded bg-(--footer-secondary)" style="width: 0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-nowrap pr-2 pb-3">2 stars</td>
+                        <td class="text-nowrap pr-4 pb-3">(0)</td>
+                        <td class="w-full pb-3">
+                            <div class="flex-1 bg-gray-200 rounded h-1.5 relative">
+                                <div class="absolute top-0 left-0 h-1.5 rounded bg-(--footer-secondary)" style="width: 0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-nowrap pr-2 pb-3">1 stars</td>
+                        <td class="text-nowrap pr-4 pb-3">(0)</td>
+                        <td class="w-full pb-3">
+                            <div class="flex-1 bg-gray-200 rounded h-1.5 relative">
+                                <div class="absolute top-0 left-0 h-1.5 rounded bg-(--footer-secondary)" style="width: 0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- Filters -->
+        <div class="mt-6 flex items-center justify-between gap-6">
+            <label class="flex-auto flex flex-wrap md:flex-nowrap items-center text-sm gap-x-4 gap-y-1 max-w-112 text-nowrap">Evaluation
+                <select class="block w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300">
+                    <option value="0">All stars</option>
+                    <option value="5">5 stars</option>
+                    <option value="4">4 stars</option>
+                </select>
+            </label>
+
+            <label class="flex-auto flex flex-wrap md:flex-nowrap items-center text-sm gap-x-4 gap-y-1 max-w-112 text-nowrap">Sort by
+
+                <select name="" class="block w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300">
+                    <option value="Relevance">Relevance</option>
+                    <option value="MostRecent">Newest first</option>
+                    <option value="OldestFirst">Oldest first</option>
+                </select>
+            </label>
+        </div>
+
+        <!-- Divider -->
+        <div class="mt-6 pt-4">
+            <h3 class="mb-6">View all reviews</h3>
+
+            <!-- Grid of Reviews -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-6">
+
+                {% include 'src/components/review.html' %}
+                {% include 'src/components/review.html' %}
+                {% include 'src/components/review.html' %}
+                {% include 'src/components/review.html' %}
+                {% include 'src/components/review.html' %}
+                {% include 'src/components/review.html' %}
+
+            </div>
+
+            <div class="flex flex-col items-center justify-center gap-2.5 border-t border-(--border) mt-6 pt-6">
+                <div class="text-sm">5 of 269</div>
+
+                <button type="button" class="btn">Show more</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+{% include 'src/components/collback.html' %}
+
+<script>
+    function productGallery() {
+        return {
+            images: [
+                'https://img.chrono24.com/images/uhren/39226527-ufpduvfsdhpn482864o69nku-ExtraLarge.jpg',
+                'https://img.chrono24.com/images/uhren/39226527-dewx1j5zdak5p9c4q281wr2g-Zoom.jpg',
+                'https://img.chrono24.com/images/uhren/39226527-0afdr17rsqzjlniyq6blt2dl-Zoom.jpg',
+                'https://img.chrono24.com/images/uhren/39226527-khxn4dff26xrfrfnwqzzniwf-Zoom.jpg',
+                'https://img.chrono24.com/images/uhren/39226527-cocwjqv0lsimxdmmnvibz22x-Zoom.jpg',
+            ],
+            youtubeId: 'dQw4w9WgXcQ',
+            currentIndex: 0,
+            isVideo: false,
+            zoom: false,
+            canZoom: false,
+            zoomOriginX: 50,
+            zoomOriginY: 50,
+            startX: 0,
+
+            get currentImage() {
+                return this.images[this.currentIndex];
+            },
+
+            get youtubeUrl() {
+                return `https://www.youtube.com/embed/${this.youtubeId}?autoplay=1`;
+            },
+
+            init() {
+                this.isVideo = false;
+                this.checkCanZoom();
+
+                // Обновляем canZoom при изменении размера окна
+                window.addEventListener('resize', () => {
+                    this.checkCanZoom();
+                });
+            },
+
+            checkCanZoom() {
+                this.canZoom = window.innerWidth >= 768; // md breakpoint Tailwind
+            },
+
+            next() {
+                if (this.currentIndex < this.images.length - 1) {
+                    this.currentIndex++;
+                } else {
+                    this.currentIndex = 0;
+                }
+                this.isVideo = false;
+            },
+
+            prev() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                } else {
+                    this.currentIndex = this.images.length - 1;
+                }
+                this.isVideo = false;
+            },
+
+            setImage(index) {
+                this.currentIndex = index;
+                this.isVideo = false;
+            },
+
+            toggleVideo() {
+                this.isVideo = !this.isVideo;
+            },
+
+            startSwipe(event) {
+                this.startX = event.touches[0].clientX;
+            },
+
+            endSwipe(event) {
+                const endX = event.changedTouches[0].clientX;
+                const diff = this.startX - endX;
+                if (Math.abs(diff) > 40) {
+                    diff > 0 ? this.next() : this.prev();
+                }
+            },
+
+            zoomMove(event) {
+                if (!this.canZoom) return;
+                const rect = event.currentTarget.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * 100;
+                const y = ((event.clientY - rect.top) / rect.height) * 100;
+                this.zoomOriginX = Math.min(Math.max(x, 0), 100);
+                this.zoomOriginY = Math.min(Math.max(y, 0), 100);
+            },
+        };
+    }
+</script>
+
+{% endblock %}

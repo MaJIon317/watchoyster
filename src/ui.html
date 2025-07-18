@@ -1,0 +1,173 @@
+{% extends "src/layouts/app.html" %}
+
+{% block content %}
+
+<section>
+    <div class="container">
+        <h2>Buttons color</h2>
+        <div class="flex flex-wrap items-center gap-4 mb-8">
+            <button class="btn">Default</button>
+            <button class="btn btn-white">White</button>
+            <button class="btn btn-dark">Dark</button>
+        </div>
+
+        <h2>Buttons size</h2>
+        <div class="flex flex-wrap items-center gap-4 mb-8">
+            <button class="btn btn-lg">Size lg</button>
+            <button class="btn btn-sm">Size sm</button>
+        </div>
+
+        <h2>Modals</h2>
+        <div class="flex flex-wrap items-center gap-4 mb-8">
+            <button class="a active underline"
+                    @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: { url: '/modal/test.html' } }))"
+            >Start Modal</button>
+        </div>
+
+        <h2>Form</h2>
+
+        <div class="max-w-xl space-y-6 font-sans text-gray-900">
+
+            <!-- Text -->
+            <div>
+                <label for="name" class="block mb-1 font-medium">Имя</label>
+                <input
+                        id="name"
+                        type="text"
+                        class="w-full px-4 py-2 rounded-md border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Введите имя"
+                        autocomplete="name"
+                />
+            </div>
+
+            <!-- Text -->
+            <div>
+                <label for="name2" class="block mb-1 font-medium">Имя</label>
+                <input
+                        id="name2"
+                        type="text"
+                        class="w-full px-4 py-2 rounded-md border border-red-600 text-red-600  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Введите имя"
+                        autocomplete="name"
+                        value="text"
+                />
+
+                <!-- Пример ошибки под полем -->
+                <p class="mt-1 text-sm text-red-600">Вы заполнили некорректные данные</p>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="block mb-1 font-medium text-gray-700">Эл. адрес</label>
+                <input
+                        id="email"
+                        type="email"
+                        class="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="example@mail.com"
+                        autocomplete="email"
+                />
+            </div>
+
+            <!-- Password -->
+            <div class="relative">
+                <label for="password" class="block mb-1 font-medium text-gray-700">Пароль</label>
+                <input
+                        type="password"
+                        id="password"
+                        class="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Введите пароль"
+                        autocomplete="current-password"
+                />
+                <!-- Иконка показать/скрыть -->
+                <button type="button" tabindex="-1" class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Textarea -->
+            <div>
+                <label for="message" class="block mb-1 font-medium text-gray-700">Сообщение</label>
+                <textarea
+                        id="message"
+                        class="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none h-24"
+                        placeholder="Введите сообщение"
+                ></textarea>
+            </div>
+
+            <!-- Select -->
+            <div>
+                <label for="category" class="block mb-1 font-medium text-gray-700">Категория</label>
+                <select
+                        id="category"
+                        class="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                    <option value="" disabled selected>Выберите категорию</option>
+                    <option>Категория 1</option>
+                    <option>Категория 2</option>
+                    <option>Категория 3</option>
+                </select>
+            </div>
+
+            <!-- Radio -->
+            <fieldset>
+                <legend class="font-medium text-gray-700 mb-1">Выберите опцию</legend>
+                <label class="inline-flex items-center gap-2 mr-4 cursor-pointer select-none">
+                    <input
+                            type="radio"
+                            name="radioGroup"
+                            class="w-4 h-4 border border-gray-300 checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    Опция 1
+                </label>
+                <label class="inline-flex items-center gap-2 mr-4 cursor-pointer select-none">
+                    <input
+                            type="radio"
+                            name="radioGroup"
+                            class="w-4 h-4 border border-gray-300 checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    Опция 2
+                </label>
+                <label class="inline-flex items-center gap-2 mr-4 cursor-pointer select-none">
+                    <input
+                            type="radio"
+                            name="radioGroup"
+                            class="w-4 h-4 border border-gray-300 checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    Опция 3
+                </label>
+            </fieldset>
+
+            <!-- Checkbox -->
+            <div>
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                            type="checkbox"
+                            class="w-4 h-4 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    Я согласен с условиями
+                </label>
+            </div>
+
+            <!-- Кнопка -->
+            <button
+                    type="submit"
+                    class="w-full btn btn-dark"
+            >
+                Отправить
+            </button>
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+{% endblock %}

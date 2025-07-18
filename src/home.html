@@ -1,0 +1,85 @@
+{% extends "src/layouts/app.html" %}
+
+{% block content %}
+
+
+<section class="flex min-h-[600px] bg-[url(/assets/images/demo/home-mobile.png)] md:bg-[url(/assets/images/demo/home.jpg)] bg-cover">
+    <div class="container flex flex-col justify-end">
+        <div class="mb-22 text-white">
+            <p class="text-xl uppercase font-semibold mb-6">Introducing</p>
+            <h1 class="text-4xl md:text-5xl uppercase">Time is our thing</h1>
+            <a href="#" class="btn btn-white" wire:navigate>
+                Discover now
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container">
+        <!-- Заголовок -->
+        <h2 class="text-2xl font-semibold mb-6">Explore Watchoyster SA</h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-3 gap-y-6 md:gap-x-6">
+
+            <!-- Карточка -->
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3] ">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+
+            <a href="#" class="flex flex-col gap-2" wire:navigate>
+                <img src="./assets/images/demo/explore-1.jpg" alt="."
+                     class="rounded-lg w-full object-cover aspect-[4/3]">
+                <span class="font-medium">Men's Watches</span>
+            </a>
+        </div>
+
+        <!-- Кнопка -->
+        <div class="mt-12 flex justify-center">
+            <button type="button" class="btn">
+                Display all
+            </button>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+<div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = null">
+    <button type="button" class="flex items-center space-x-2 a">
+        <span class="min-w-max">🇷🇺 Русский</span>
+
+        <svg class="w-2.5 h-2 transition-transform duration-100 rotate-0"
+             :class="open ? 'rotate-x-180' : 'rotate-0'"
+             viewBox="0 0 10 7"
+             xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.837601 1.04586C1.06541 0.818057 1.43475 0.818057 1.66256 1.04586L5.33341 4.71672L9.00427 1.04586C9.23206 0.818057 9.60143 0.818057 9.82922 1.04586C10.057 1.27367 10.057 1.64301 9.82922 1.87082L5.74589 5.95415C5.5181 6.18194 5.14873 6.18194 4.92094 5.95415L0.837601 1.87082C0.609797 1.64301 0.609797 1.27367 0.837601 1.04586Z" stroke="none"></path>
+        </svg>
+    </button>
+
+    <div class="dropdown" x-show="open" x-transition style="display: none;">
+
+        <a
+                href="#"
+                rel="alternate"
+                hreflang="$lang"
+                class="item"
+                wire:navigate
+        >
+            🇺🇸 English
+        </a>
+
+        <a
+                href="#"
+                rel="alternate"
+                hreflang="$lang"
+                class="item"
+                wire:navigate
+        >
+            🇺🇸 English
+        </a>
+
+        <a
+                href="#"
+                rel="alternate"
+                hreflang="$lang"
+                class="item"
+                wire:navigate
+        >
+            🇺🇸 English
+        </a>
+
+    </div>
+
+</div>

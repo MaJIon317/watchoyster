@@ -1,0 +1,196 @@
+@import "./assets/fonts/wix-madefor-text/style.css";
+
+@import "tailwindcss";
+
+@source './*.html';
+@source './**/*.html';
+
+@theme {
+    --font-sans: 'Wix Madefor Text', sans-serif;
+    --main-bg: #ffffff;
+    --main-text: #191919;
+    --main-text-active: #0062ff;
+    --border: #e6e6e6;
+    --footer: #1a253c;
+    --footer-secondary: #374e80;
+    --footer-text: #ffffff;
+    --bg-block: #f1f5f9;
+}
+@layer {
+    body {
+        @apply flex flex-col min-h-screen bg-(--main-bg) text-(--main-text);
+    }
+    main {
+        @apply flex-1;
+    }
+    .container {
+        @apply mx-auto max-w-[1220px] px-4 md:px-5;
+    }
+}
+
+@layer components {
+    h1 {
+        @apply text-2xl md:text-4xl font-semibold mb-6;
+    }
+    h2 {
+        @apply text-lg md:text-2xl font-semibold mb-3;
+    }
+    h3 {
+        @apply text-base md:text-lg font-semibold mb-2;
+    }
+    hr {
+        @apply text-(--border) my-4;
+    }
+    svg {
+        @apply fill-current stroke-current;
+    }
+    img {
+        @apply object-cover pointer-events-none;
+    }
+    label {
+        @apply cursor-pointer;
+    }
+    .section {
+        @apply my-24;
+    }
+    .mobile-menu {
+        .dropdown {
+            @apply bottom-full top-auto;
+        }
+    }
+    footer {
+        .dropdown {
+            @apply bottom-full top-auto;
+        }
+    }
+
+    a,
+    .a {
+        @apply cursor-pointer hover:text-(--main-text-active);
+    }
+    a.active,
+    .a.active {
+        @apply text-(--main-text-active) hover:text-(--main-text);
+    }
+
+    .dropdown {
+        @apply absolute z-1 flex flex-col top-full min-w-max max-h-64 overflow-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg focus:outline-none right-0;
+        .item {
+            @apply w-full flex items-center space-x-2 rounded-md py-2 px-3 cursor-pointer transition-all text-(--main-text) hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100;
+        }
+        .active {
+            @apply bg-slate-100;
+        }
+    }
+    button,
+    .button {
+        @apply cursor-pointer;
+    }
+    .btn {
+        @apply inline-flex gap-2 items-center justify-center text-center px-7 py-3 border text-(--main-text) hover:text-(--main-text) border-gray-400 rounded-md text-sm font-medium hover:bg-gray-100 transition;
+    }
+    .btn-sm {
+        @apply px-3 py-1.5;
+    }
+    .btn-lg {
+        @apply text-base;
+    }
+    .btn-white {
+        @apply bg-white hover:bg-gray-300;
+    }
+    .btn-dark {
+        @apply bg-(--footer) text-(--footer-text) hover:bg-(--footer-secondary) hover:text-(--footer-text);
+    }
+    .breadcrumbs {
+        @apply flex items-center gap-2 leading-none text-xs;
+        > * {
+            @apply inline-flex items-end gap-[inherit] overflow-hidden [:first-child]:min-w-max [:not(:first-child)]:before:content-['/'] [:not(:first-child)]:before:text-[10px] [:not(:first-child)]:before:leading-[inherit];
+            [itemprop="item"],
+            >[itemprop="name"] {
+                @apply overflow-hidden overflow-ellipsis text-nowrap;
+            }
+        }
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;     /* IE и Edge */
+        scrollbar-width: none;        /* Firefox */
+    }
+
+    .tabs {
+        @apply relative;
+        .heading {
+            @apply flex space-x-6 border-b border-gray-200 mb-6;
+            .item {
+                @apply pb-2 font-medium border-b-2 [:not(.active)]:hover:text-(--main-text-active) [:not(.active)]:border-b-transparent;
+            }
+        }
+    }
+
+    .table {
+        @apply w-full text-left text-sm border-collapse mb-6;
+        thead,
+        tbody {
+            @apply divide-y divide-gray-200;
+        }
+        th {
+            @apply text-lg font-semibold mb-2;
+        }
+        td {
+            @apply py-2;
+        }
+    }
+
+    .field-input {
+        --border: #d1d5dc;
+        --focus: #2b7fff;
+        @apply relative grid grid-cols-1 md:grid-cols-[250px_1fr] gap-x-4 gap-y-1 items-center text-sm;
+        .labels {
+            @apply md:text-right;
+        }
+        label,
+        .label {
+            @apply font-medium md:text-right;
+        }
+        input,
+        .input {
+            @apply select-none flex justify-between items-center w-full px-5 py-3 rounded-md border border-(--border) focus:outline-none focus:ring-2 focus:ring-(--focus) focus:border-transparent;
+        }
+        .group {
+            @apply relative flex w-full;
+            .prefix {
+                @apply relative flex items-center px-2 gap-1 rounded-md border border-(--border) rounded-r-none border-r-0;
+            }
+            > input,
+            > .input {
+                @apply rounded-l-none;
+            }
+        }
+        .dropdown {
+            @apply mt-1.5;
+            input,
+            .input {
+                @apply px-3 py-2;
+            }
+        }
+        .labels {
+            label,
+            .label {
+                @apply after:content-[','] last:after:content-[''];
+            }
+        }
+    }
+
+}
+
+
+/*
+    sm	40rem (640px)	@media (width >= 40rem) { ... }
+    md	48rem (768px)	@media (width >= 48rem) { ... }
+    lg	64rem (1024px)	@media (width >= 64rem) { ... }
+    xl	80rem (1280px)	@media (width >= 80rem) { ... }
+    2xl	96rem (1536px)	@media (width >= 96rem) { ... }
+*/
